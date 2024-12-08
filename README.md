@@ -550,4 +550,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 
 ## Contact
-For any questions or issues, please contact qabyjavedansari@gmail.com OR connect with me over linked on www.linkedin.com/in/qaleaderjavedansari.
+For any questions or issues, please contact javed.ansari@strongholdindia.com
