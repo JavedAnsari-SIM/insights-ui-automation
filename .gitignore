@@ -1,8 +1,77 @@
-# Ignore Python bytecode files
+# Python Bytecode
 *.pyc
 __pycache__/
+*$py.class
+
+# Allure Test Results
 allure-results/
 
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv/
+.env/
 
-# Ignore other files and directories
-# Add any other patterns here as needed
+# Distribution / Packaging
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Test Results and Coverage
+test-results/
+reports/
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# IDE and Editor Settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
+
+# OS-Specific Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets and Environment Variables
+.env
+.env.*
+
+# C Extensions
+*.so
+
+# PyInstaller
+*.manifest
+*.spec
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre Type Checker
+.pyre/

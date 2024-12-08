@@ -14,6 +14,9 @@ pytest-mock = "^3.14.0"
 jsonschema = "^4.23.0"
 pyyaml = "^6.0.2"
 allure-pytest = "^2.13.5"
+selenium = "^4.0.0"
+psycopg2 = "^2.9.0"
+
 
 #jaraco.functools = "^4.0.2"  #Poetry is having issues with this hence commenting for now until finds a fix
 allure-python-commons = "^2.13.5"
