@@ -16,6 +16,7 @@ pyyaml = "^6.0.2"
 allure-pytest = "^2.13.5"
 selenium = "^4.0.0"
 psycopg2 = "^2.9.0"
+pytest-bdd = "^5.0.0"
 
 
 #jaraco.functools = "^4.0.2"  #Poetry is having issues with this hence commenting for now until finds a fix
@@ -33,6 +34,4 @@ pytest = "^8.3.3"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-lint = "pylint src"
 

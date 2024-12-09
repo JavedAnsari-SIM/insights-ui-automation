@@ -1,5 +1,16 @@
 # src/pytestifypro/config/config.yaml
+selenium:
+  base_url: "https://title-chaining-sandbox.herokuapp.com/"
+  browser: "chrome"  # could be "firefox"
+  headless: true
+  driver_path: "/path/to/chromedriver"
 
+database:
+  host: "localhost"
+  port: 5433
+  user: "postgres"
+  password: "postgres"
+  database: "title_chaining"
 common_upi_payment: &common_upi_payment
   success:
     payload:

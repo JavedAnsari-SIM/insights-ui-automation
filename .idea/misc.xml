@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Poetry (PyTestify)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (pytestify)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (pytestifypro)" project-jdk-type="Python SDK" />
 </project>

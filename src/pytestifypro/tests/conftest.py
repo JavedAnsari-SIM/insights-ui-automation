@@ -10,6 +10,58 @@ from pytestifypro.reporters.difference_reporter import SimpleDifferenceReporter
 from pytestifypro.utils.check_docker import check_docker
 from pytestifypro.utils.allure_reporter import AllureReporter
 
+from pytestifypro.utils.queries_manager import SQLFileQueriesManager
+
+@pytest.fixture(scope="session")
+def db_client(config):
+    db_conf = config["database"]
+    client = DBClient(
+        host=db_conf["host"],
+        port=db_conf["port"],
+        user=db_conf["user"],
+        password=db_conf["password"],
+        database=db_conf["database"]
+    )
+    client.connect()
+    yield client
+    client.close()
+
+@pytest.fixture(scope="session")
+def driver(config):
+    sel_conf = config["selenium"]
+    options = ChromeOptions()
+    if sel_conf.get("headless", True):
+        options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    logger.info("Initializing WebDriver...")
+    driver = webdriver.Chrome(options=options)
+    driver.maximize_window()
+    yield driver
+    logger.info("Tearing down WebDriver...")
+    driver.quit()
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    # Hook to capture screenshot on failure
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == "call" and report.failed:
+        driver_fixture = item.funcargs.get('driver', None)
+        if driver_fixture:
+            test_name = report.nodeid.replace("::", "_")
+            logger.warning(f"Test failed, taking screenshot: {test_name}")
+            take_screenshot(driver_fixture, name=test_name)
+
+@pytest.fixture(scope="session")
+def queries_manager():
+    # If using YAML-based:
+    # return QueriesManager(queries_file='src/pytestifypro/data/queries.yaml')
+
+    # If using SQL files-based:
+    return QueriesManager(base_dir='src/pytestifypro/data/queries')
+
 @pytest.fixture
 def test_setup():
     def _setup(feature, story, description, severity):
@@ -41,10 +93,6 @@ def config():
 
     # Return the config for the selected environment
     return config_data['environments'][selected_env]
-# def config():
-#     with open('src/pytestifypro/config/config.yaml') as f:
-#         config_data = yaml.safe_load(f)
-#     return config_data
 
 @pytest.fixture(scope="session")
 def schema_config():
