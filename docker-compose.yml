@@ -1,11 +1,12 @@
-version: '3.8'
 services:
   selenium-hub:
     image: selenium/hub:latest
+    platform: linux/amd64
     ports:
       - "4444:4444"
   chrome-node:
     image: selenium/node-chrome:latest
+    platform: linux/amd64
     depends_on:
       - selenium-hub
     environment:
@@ -14,6 +15,7 @@ services:
       - "5900"
   wiremock:
     image: wiremock/wiremock
+    platform: linux/amd64
     ports:
       - "8081:8080"
     volumes:

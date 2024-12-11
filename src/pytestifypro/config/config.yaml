@@ -1,66 +1,16 @@
 # src/pytestifypro/config/config.yaml
-selenium:
-  base_url: "https://title-chaining-sandbox.herokuapp.com/"
-  browser: "chrome"  # could be "firefox"
-  headless: true
-  driver_path: "/path/to/chromedriver"
-
-database:
-  host: "localhost"
-  port: 5433
-  user: "postgres"
-  password: "postgres"
-  database: "title_chaining"
-common_upi_payment: &common_upi_payment
-  success:
-    payload:
-      transactionId: "1234567890"
-    response:
-      status: "SUCCESS"
-      transactionId: "1234567890"
-      amount: "100.00"
-      currency: "INR"
-      message: "Payment successful"
-      upiId: "user@upi"
-  failure:
-    payload:
-      transactionId: "1234567891"
-    response:
-      status: "FAILURE"
-      transactionId: "1234567891"
-      amount: "100.00"
-      currency: "INR"
-      message: "Payment failed"
-      errorCode: "INSUFFICIENT_FUNDS"
-  pending:
-    payload:
-      transactionId: "1234567892"
-    response:
-      status: "PENDING"
-      transactionId: "1234567892"
-      amount: "100.00"
-      currency: "INR"
-      message: "Payment is pending"
-      upiId: "user@upi"
-
 environments:
-  dev:
-    base_url: "https://jsonplaceholder.typicode.com"
-    wiremock_base_url: "http://localhost:8081"
-    endpoints:
-      upi_payment_status: "/upi/payment/status"
-    upi_payment: *common_upi_payment
-
-  staging:
-    base_url: "https://staging.api.example.com"
-    wiremock_base_url: "http://localhost:8081"
-    endpoints:
-      upi_payment_status: "/upi/payment/status"
-    upi_payment: *common_upi_payment
-
-  prod:
-    base_url: "https://jsonplaceholder.typicode.com"
-    wiremock_base_url: "http://localhost:8081"
-    endpoints:
-      upi_payment_status: "/upi/payment/status"
-    upi_payment: *common_upi_payment
+  sandbox:
+    selenium:
+      base_url: "https://title-chaining-sandbox.herokuapp.com"
+      browser: "chrome"  # could be "firefox"
+      headless: false
+      #driver_path: "/path/to/chromedriver"
+    
+    database:
+      host: "localhost"
+      port: 5433
+      user: "postgres"
+      password: "postgres"
+      database: "title_chaining"
+      
