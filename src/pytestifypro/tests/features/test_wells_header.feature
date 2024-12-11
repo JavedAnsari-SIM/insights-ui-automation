@@ -18,4 +18,7 @@ Feature: Wells Header Validation
 
   Examples:
     | UWI        | FirstProductionDate | LastProductionDate | WellName                          | OperatorName          | WellStatus  | HoleDirection |
-    | 4231742813 | 8/1/2021            | 8/1/2024            | MIDNIGHT MATADOR 12-24 D #6LS      | BIRCH OPERATIONS INC  | Producing   | HORIZONTAL    |
+    | 4231742813 | 8/1/2021            | 8/1/2024           | MIDNIGHT MATADOR 12-24 D #6LS     | BIRCH OPERATIONS INC  | Producing   | HORIZONTAL    |
+    | 4231742808 | 8/1/2021            | 8/1/2024           | MIDNIGHT MATADOR 12-24 B #2LS     | BIRCH OPERATIONS INC  | Producing   | HORIZONTAL    |
+    | 4222738886 | 8/1/2017            | 8/1/2024           | ICEMAN #0223LS                    | SM ENERGY CO          | Producing   | HORIZONTAL    |
+

@@ -155,9 +155,10 @@ def test_log_info(caplog):
 
 ### Running Tests
 
-#### Directly
+To run tests, use the following command:
+
 ```bash
-poetry run pytest --alluredir=allure-results
+TEST_ENV=sandbox poetry run pytest -m "not mock" --alluredir=allure-results --log-cli-level=INFO -s
 ```
 
 #### With Docker
