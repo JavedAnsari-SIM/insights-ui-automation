@@ -2,6 +2,8 @@
 *.pyc
 __pycache__/
 *$py.class
+*.pyo
+*.pyd
 
 # Allure Test Results
 allure-results/

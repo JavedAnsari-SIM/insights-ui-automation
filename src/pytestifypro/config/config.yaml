@@ -8,9 +8,14 @@ environments:
       #driver_path: "/path/to/chromedriver"
     
     database:
-      host: "localhost"
-      port: 5433
-      user: "postgres"
-      password: "postgres"
-      database: "title_chaining"
+      host: "p.fy4z22xkwvekbm7ptaqepobuqy.db.postgresbridge.com"
+      port: 5432
+      user: "u_b2gqzeecvndepgjdifh6lnfkoe"
+      password: "2ABW7aphfTmF2l6qrQD49yoSZoF8eROmAyUAi5rSYlBRJakwflfhpb7xsCWRph2E"
+      database: "postgres"
+
+    executor:
+      name: "Local Execution"
+      type: "Local"
+      report_name: "Allure UI Automation Report"
       

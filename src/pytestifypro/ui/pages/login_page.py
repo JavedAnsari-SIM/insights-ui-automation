@@ -5,6 +5,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from pytestifypro.ui.pages.login_page_locators import LoginPageLocators
+from selenium.common.exceptions import StaleElementReferenceException
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -52,12 +54,25 @@ class LoginPage:
             logger.error("Password field not found.")
 
     def click_sign_in(self):
-        """Click the 'Sign in' button after entering the password."""
-        try:
-            self.wait.until(EC.element_to_be_clickable(LoginPageLocators.SIGN_IN_BUTTON)).click()
-            logger.info("Successfully clicked the signin button.")
-        except TimeoutException:
-            logger.error("Sign in button not found or not clickable.")
+        """Click the 'Sign in' button after entering the password, with retries."""
+        retries = 3
+        for attempt in range(retries):
+            try:
+                sign_in_button = self.wait.until(EC.element_to_be_clickable(LoginPageLocators.SIGN_IN_BUTTON))
+                sign_in_button.click()
+                logger.info("Successfully clicked the signin button.")
+                return
+            except StaleElementReferenceException:
+                logger.warning(
+                    f"Stale element encountered on sign_in button. Retrying... (Attempt {attempt + 1}/{retries})")
+                if attempt < retries - 1:
+                    continue
+                else:
+                    logger.error("Failed to click 'Sign In' button due to stale element reference.")
+                    raise
+            except TimeoutException:
+                logger.error("Sign in button not found or not clickable.")
+                raise
 
     def click_stay_signed_in(self):
         """Click the 'Stay Signed In' button with robust handling for stale elements."""
@@ -82,6 +97,7 @@ class LoginPage:
             except TimeoutException:
                 logger.error("Timeout waiting for 'Stay Signed In' button to become clickable.")
                 raise
+
         # Optional: Refresh the page and try again as a last resort
         logger.info("Refreshing the page to attempt clicking 'Stay Signed In' button again...")
         self.driver.refresh()

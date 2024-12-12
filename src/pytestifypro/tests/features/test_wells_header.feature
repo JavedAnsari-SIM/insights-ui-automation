@@ -9,16 +9,15 @@ Feature: Wells Header Validation
   Scenario Outline: Validate well header details for a specific UWI
     Given I have a well with UWI "<UWI>"
     When I open the well details page in the browser
-    Then the UI should display the first production date as "<FirstProductionDate>"
-    And the UI should display the last production date as "<LastProductionDate>"
-    And the UI should display the well name as "<WellName>"
-    And the UI should display the operator name as "<OperatorName>"
-    And the UI should display the well status as "<WellStatus>"
-    And the UI should display the hole direction as "<HoleDirection>"
+    Then the UI should display the first production date as expected
+    And the UI should display the last production date as expected
+    And the UI should display the well name as expected
+    And the UI should display the operator name as expected
+    And the UI should display the well status as expected
+    And the UI should display the hole direction as expected
 
   Examples:
-    | UWI        | FirstProductionDate | LastProductionDate | WellName                          | OperatorName          | WellStatus  | HoleDirection |
-    | 4231742813 | 8/1/2021            | 8/1/2024           | MIDNIGHT MATADOR 12-24 D #6LS     | BIRCH OPERATIONS INC  | Producing   | HORIZONTAL    |
-    | 4231742808 | 8/1/2021            | 8/1/2024           | MIDNIGHT MATADOR 12-24 B #2LS     | BIRCH OPERATIONS INC  | Producing   | HORIZONTAL    |
-    | 4222738886 | 8/1/2017            | 8/1/2024           | ICEMAN #0223LS                    | SM ENERGY CO          | Producing   | HORIZONTAL    |
-
+    | UWI        |
+    | 4231742813 |
+    | 4231742710 |
+    | 4222738886 |

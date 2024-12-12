@@ -21,7 +21,7 @@ class SQLFileQueriesManager:
         self.base_dir = base_dir
 
     def get_query(self, query_name, **kwargs):
-        file_path = os.path.join(self.base_dir, f"{query_name}.sql")
+        file_path = os.path.join(self.base_dir, f"{query_name}")
         if not os.path.exists(file_path):
             raise ValueError(f"Query file {file_path} not found.")
         with open(file_path, 'r') as f:

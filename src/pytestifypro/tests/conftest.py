@@ -9,7 +9,6 @@ from pytestifypro.client.api_client import APIClient
 from pytestifypro.managers.priority_manager import SimplePriorityManager
 from pytestifypro.reporters.difference_reporter import SimpleDifferenceReporter
 from pytestifypro.utils.check_docker import check_docker
-from pytestifypro.utils.allure_reporter import AllureReporter
 from pytestifypro.managers.queries_manager import SQLFileQueriesManager
 from pytestifypro.utils.ui_actions import take_screenshot  # NEW
 from selenium import webdriver
@@ -19,24 +18,74 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from pytestifypro.ui.pages.wells_page import WellPageLocators
 from pytestifypro.ui.pages.login_page import LoginPage
+from pathlib import Path
+import allure
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="session")
-def db_client(config):
-    db_conf = config["database"]
-    client = DBClient(
-        host=db_conf["host"],
-        port=db_conf["port"],
-        user=db_conf["user"],
-        password=db_conf["password"],
-        database=db_conf["database"]
-    )
-    client.connect()
-    yield client
-    client.close()
+def queries_manager():
+    # If using SQL files-based:
+    return SQLFileQueriesManager(base_dir='src/pytestifypro/data/queries')
+
+# Database client fixture
+@pytest.fixture(scope="session")
+def db_client(config, queries_manager):
+    """
+    Fixture to establish a database connection and provide methods to execute queries.
+    """
+    db_config = config['database']
+    try:
+        connection = psycopg2.connect(
+            host=db_config['host'],
+            port=db_config['port'],
+            user=db_config['user'],
+            password=db_config['password'],
+            database=db_config['database']
+        )
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+        logger.info("Database connection established.")
+    except Exception as e:
+        logger.error(f"Failed to connect to the database: {e}")
+        pytest.exit("Database connection failed.")
+
+    yield {
+        'connection': connection,
+        'cursor': cursor,
+        'queries_manager': queries_manager
+    }
+
+    try:
+        cursor.close()
+        connection.close()
+        logger.info("Database connection closed.")
+    except Exception as e:
+        logger.error(f"Error closing database connection: {e}")
+
+# Fixture to fetch expected data from the database based on UWI
+@pytest.fixture(scope='function')
+def fetch_expected_data(db_client):
+    """
+    Fetch expected data from the database based on the provided UWI.
+    """
+    def _fetch(UWI):
+        query = db_client['queries_manager'].get_query('get_well_header_details.sql')
+        logger.info(f"Executing query: {query} with parameters: {(UWI,)}")
+        try:
+            db_client['cursor'].execute(query, (UWI,))
+            result = db_client['cursor'].fetchone()
+            if not result:
+                pytest.fail(f"No data found for UWI: {UWI}")
+            logger.info(f"Fetched data for UWI {UWI}: {result}")
+            return result
+        except Exception as e:
+            pytest.fail(f"Failed to execute query for UWI {UWI}: {e}")
+    return _fetch
 
 @pytest.fixture(scope="session")
 def driver(config):
@@ -146,22 +195,44 @@ def pytest_runtest_makereport(item, call):
             logger.warning(f"Test failed, taking screenshot: {test_name}")
             take_screenshot(driver_fixture, name=test_name)
 
-@pytest.fixture(scope="session")
-def queries_manager():
-    # If using YAML-based:
-    # return QueriesManager(queries_file='src/pytestifypro/data/queries.yaml')
-
-    # If using SQL files-based:
-    return SQLFileQueriesManager(base_dir='src/pytestifypro/data/queries')
-
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def test_setup():
-    def _setup(feature, story, description, severity):
-        AllureReporter.add_feature(feature)
-        AllureReporter.add_story(story)
-        AllureReporter.add_description(description)
-        AllureReporter.add_severity(severity)
-    return _setup
+    config_path = Path("src/pytestifypro/config/config.yaml")
+    if config_path.exists():
+        with open(config_path, "r") as file:
+            config = yaml.safe_load(file)
+    else:
+        config = {}
+
+    environment_name = "sandbox"
+    env_config = config.get("environments", {}).get(environment_name, {})
+    selenium_config = env_config.get("selenium", {})
+    executor_config = env_config.get("executor", {})
+
+    base_url = selenium_config.get("base_url", "Not Specified")
+    browser = selenium_config.get("browser", "Not Specified")
+    headless = selenium_config.get("headless", "false")
+
+    executor_name = executor_config.get("name", "Not Specified")
+    executor_type = executor_config.get("type", "Not Specified")
+    report_name = executor_config.get("report_name", "Not Specified")
+
+    # Create allure-results directory if it doesn't exist
+    allure_results_path = Path("allure-results")
+    allure_results_path.mkdir(exist_ok=True)
+
+    # Write environment details to environment.properties
+    env_properties = [
+        f"Environment={environment_name}",
+        f"Base_URL={base_url}",
+        f"Browser={browser}",
+        f"Headless={headless}",
+        f"Executor_Name={executor_name}",
+        f"Executor_Type={executor_type}",
+        f"Report_Name={report_name}"
+    ]
+
+    (allure_results_path / "environment.properties").write_text("\n".join(env_properties))
 
 @pytest.fixture
 def priority_manager():

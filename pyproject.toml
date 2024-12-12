@@ -13,19 +13,23 @@ requests = "^2.32.3"
 pytest-mock = "^3.14.0"
 jsonschema = "^4.23.0"
 pyyaml = "^6.0.2"
-allure-pytest = "^2.13.5"
 selenium = "^4.0.0"
 psycopg2 = "^2.9.0"
 pytest-bdd = "^5.0.0"
-
+allure-pytest-bdd = "^2.13.5"
+pytest-xdist = "^3.3.1"
 
 #jaraco.functools = "^4.0.2"  #Poetry is having issues with this hence commenting for now until finds a fix
 allure-python-commons = "^2.13.5"
+psycopg2-binary = "^2.9.10"
 
 
 [tool.poetry.dev-dependencies]
 pytest-cov = "^5.0.0"
 pylint = "^3.2.6"
+
+[tool.poetry.group.dev.dependencies]
+pytest-xdist = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

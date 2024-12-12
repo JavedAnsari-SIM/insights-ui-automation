@@ -4,6 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import allure
 import os
+from datetime import datetime
+import pytest
 
 from pytestifypro.ui.pages.wells_page import WellPageLocators  # Ensure file is well_page.py not wells_page.py
 
@@ -29,11 +31,44 @@ def open_page(driver, url):
     driver.get(url)
     allure.step(f"Open page: {url}")
 
+def parse_date(date_str):
+    """
+    Attempt to parse a date string with multiple formats.
+    Returns a datetime object if successful, else raises ValueError.
+    """
+    date_formats = ["%m/%d/%Y", "%-m/%-d/%Y", "%m-%d-%Y", "%-m-%-d-%Y"]  # Add more if necessary
+    for fmt in date_formats:
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"No valid date format found for '{date_str}'")
+
+
 def compare_values(field_name, actual, expected):
-    """Compare actual and expected values with logging and assertion."""
+    """
+    Compare actual and expected values with logging and assertion.
+    If the field is a date, normalize the format before comparison.
+    """
     logger.info(f"Comparing {field_name}: Expected='{expected}', Actual='{actual}'")
-    assert actual == expected, f"{field_name} mismatch: '{actual}' != '{expected}'"
-    allure.step(f"{field_name} matches expected value")
+
+    if "date" in field_name.lower():
+        try:
+            actual_date = parse_date(actual)
+            expected_date = parse_date(expected)
+            assert actual_date == expected_date, f"{field_name} mismatch: '{actual}' != '{expected}'"
+            logger.info(f"{field_name} matched successfully.")
+        except ValueError as ve:
+            logger.error(f"Date parsing error for {field_name}: {ve}")
+            allure.attach(
+                f"Date parsing error: {ve}",
+                name="Date Parsing Error",
+                attachment_type=allure.attachment_type.TEXT
+            )
+            pytest.fail(f"Date parsing error for {field_name}: {ve}")
+    else:
+        assert actual == expected, f"{field_name} mismatch: '{actual}' != '{expected}'"
+        logger.info(f"{field_name} matched successfully.")
 
 def click_element(driver, locator, timeout=10):
     """Click a web element identified by locator after waiting for it."""
