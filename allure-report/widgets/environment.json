@@ -1,0 +1,1 @@
+[{"values":["sandbox"],"name":"Environment"},{"values":["https://title-chaining-sandbox.herokuapp.com"],"name":"Base_URL"},{"values":["chrome"],"name":"Browser"},{"values":["False"],"name":"Headless"},{"values":["Local Execution"],"name":"Executor_Name"},{"values":["Local"],"name":"Executor_Type"},{"values":["Allure UI Automation Report"],"name":"Report_Name"}]

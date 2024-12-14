@@ -16,7 +16,7 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from pytestifypro.ui.pages.wells_page import WellPageLocators
+from pytestifypro.ui.pages.wells_page_locators import WellPageLocators
 from pytestifypro.ui.pages.login_page import LoginPage
 from pathlib import Path
 import allure
@@ -86,6 +86,43 @@ def fetch_expected_data(db_client):
         except Exception as e:
             pytest.fail(f"Failed to execute query for UWI {UWI}: {e}")
     return _fetch
+
+@pytest.fixture
+def fetch_version_data(db_client, queries_manager):
+    """
+    Fetch available versions for a well from the database using SQL queries.
+    """
+    def _fetch(uwi):
+        # Load the queries
+        current_version_query = queries_manager.get_query("get_well_versions.sql", specific_query="current_version")
+        previous_versions_query = queries_manager.get_query("get_well_versions.sql", specific_query="previous_versions")
+
+        # Execute current version query
+        db_client['cursor'].execute(current_version_query, (uwi,))
+        current_version = db_client['cursor'].fetchone()
+        if not current_version:
+            pytest.fail(f"No current version found for UWI: {uwi}")
+
+        # Execute previous versions query
+        db_client['cursor'].execute(previous_versions_query, (uwi,))
+        previous_versions = db_client['cursor'].fetchall()
+
+        # Process and format the versions
+        versions = []
+        if previous_versions:
+            for i, version_period in enumerate(previous_versions):
+                start_date, end_date = version_period[0].split()[0], version_period[1].split()[0]
+                versions.append({"Version": f"Version {i + 1}", "Date Range": f"({start_date} - {end_date})"})
+
+        # Add the current version as the last entry
+        start_date = current_version[0].split()[0]
+        versions.append({"Version": f"Version {len(versions) + 1} Current", "Date Range": f"({start_date})"})
+
+        logger.info(f"Fetched versions for UWI {uwi}: {versions}")
+        return versions
+
+    return _fetch
+
 
 @pytest.fixture(scope="session")
 def driver(config):

@@ -1,0 +1,116 @@
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:52 Database connection established.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:78 Executing query: -- src/pytestifypro/data/queries/get_well_header_details.sql
+SELECT
+    w.lease_name || ' #' || w.well_number AS srp_well_name,
+    w.current_operator,
+    w.hole_direction,
+    INITCAP(w."status") AS srp_well_status,
+    TO_CHAR(w.permit_date, 'MM/DD/YYYY') AS permit_date,
+    TO_CHAR(w.spud_date, 'MM/DD/YYYY') AS spud_date,
+    COALESCE(TO_CHAR(w.rig_release_date, 'MM/DD/YYYY'), '–') AS rig_release_date,
+    TO_CHAR(w.completion_date, 'MM/DD/YYYY') AS completion_date,
+    TO_CHAR(MIN(wpr.date), 'MM/DD/YYYY') AS first_production_date,
+    TO_CHAR(MAX(wpr.date), 'MM/DD/YYYY') AS last_production_date
+FROM
+    wells w
+LEFT JOIN
+    well_production_records wpr ON w.id = wpr.well_id
+WHERE
+    w.uwi = %s
+GROUP BY
+    w.lease_name,
+    w.well_number,
+    w.current_operator,
+    w.hole_direction,
+    w."status",
+    w.permit_date,
+    w.spud_date,
+    w.rig_release_date,
+    w.completion_date;
+
+ with parameters: ('4231742813',)
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:84 Fetched data for UWI 4231742813: RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '08/01/2021', 'last_production_date': '09/01/2024'})
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:32 Stored UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:34 Fetched expected data for UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:49 Executing current version query: SELECT
+'current' AS version_type,
+NULL::timestamp with time zone AS start_period,
+NULL::timestamp with time zone AS end_period,
+w.*
+FROM
+wells w
+WHERE
+w.uwi = %s; with parameters: (4231742813,)
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:58 Executing historical versions query: SELECT
+'historical' AS version_type,
+lower(wh.sys_period) AS start_period,
+upper(wh.sys_period) AS end_period,
+w.*
+FROM
+wells_history wh
+JOIN
+wells w ON wh.uwi = w.uwi
+WHERE
+w.uwi = %s; with parameters: (4231742813,)
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:67 Executing current well header details query: -- src/pytestifypro/data/queries/get_well_header_details.sql
+SELECT
+    w.lease_name || ' #' || w.well_number AS srp_well_name,
+    w.current_operator,
+    w.hole_direction,
+    INITCAP(w."status") AS srp_well_status,
+    TO_CHAR(w.permit_date, 'MM/DD/YYYY') AS permit_date,
+    TO_CHAR(w.spud_date, 'MM/DD/YYYY') AS spud_date,
+    COALESCE(TO_CHAR(w.rig_release_date, 'MM/DD/YYYY'), '–') AS rig_release_date,
+    TO_CHAR(w.completion_date, 'MM/DD/YYYY') AS completion_date,
+    TO_CHAR(MIN(wpr.date), 'MM/DD/YYYY') AS first_production_date,
+    TO_CHAR(MAX(wpr.date), 'MM/DD/YYYY') AS last_production_date
+FROM
+    wells w
+LEFT JOIN
+    well_production_records wpr ON w.id = wpr.well_id
+WHERE
+    w.uwi = %s
+GROUP BY
+    w.lease_name,
+    w.well_number,
+    w.current_operator,
+    w.hole_direction,
+    w."status",
+    w.permit_date,
+    w.spud_date,
+    w.rig_release_date,
+    w.completion_date;
+
+ with parameters: (4231742813,)
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:107 Executing first production date query for UWI: 4231742813, sys_period_start: 2024-12-06 00:10:57.634736+00:00
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:120 Executing last production date query for UWI: 4231742813, sys_period_start: 2024-12-06 00:10:57.634736+00:00
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:133 Executing well header details query for UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:107 Executing first production date query for UWI: 4231742813, sys_period_start: 2024-12-08 07:42:28.497023+00:00
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:120 Executing last production date query for UWI: 4231742813, sys_period_start: 2024-12-08 07:42:28.497023+00:00
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:133 Executing well header details query for UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:156 Versions stored in request node for UWI 4231742813: [RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '08/01/2021', 'last_production_date': '09/01/2024', 'Version Name': 'Version 3 Current', 'Date Range': '12/13/2024 12:36 PM'}), RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '05/01/2021', 'last_production_date': '08/01/2024', 'Version Name': 'Version 2', 'Date Range': '12/06/2024 12:10 AM - 12/08/2024 07:42 AM'}), RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '05/01/2021', 'last_production_date': '08/01/2024', 'Version Name': 'Version 1', 'Date Range': '12/08/2024 07:42 AM - 12/13/2024 12:36 PM'})]
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:136 Initializing WebDriver...
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:150 Navigated to https://title-chaining-sandbox.herokuapp.com for authentication.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:24 SSO Login button found clicked.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:158 Clicked SSO Login button.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:34 Successfully entered the username.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:42 Successfully clicked the next button.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:162 Successfully entered username.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:52 Successfully entered the password.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:63 Successfully clicked the signin button.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:166 Successfully entered password.
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:82 Attempting to click 'Stay Signed In' button...
+[32mINFO    [0m pytestifypro.ui.pages.login_page:login_page.py:88 'Stay Signed In' button clicked successfully.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:170 Successfully logged in via Azure SSO.
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:176 Post-login, navigated to: https://title-chaining-sandbox.herokuapp.com/
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:186 Normalized Base URL: https://title-chaining-sandbox.herokuapp.com
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:187 Normalized Current URL: https://title-chaining-sandbox.herokuapp.com
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:168 Attempting to open well details page for UWI: 4231742813 at URL: https://title-chaining-sandbox.herokuapp.com/wells/4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:172 Current URL after navigation: https://title-chaining-sandbox.herokuapp.com/wells/4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:173 Navigated to well details page: https://title-chaining-sandbox.herokuapp.com/wells/4231742813
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:208 Verifying navigation to the page for UWI: 4231742813
+[32mINFO    [0m src.pytestifypro.tests.conftest:conftest.py:212 Successfully navigated to the wells page for UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:177 Verified navigation to the well details page for UWI: 4231742813
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:191 Expected versions (reordered and renumbered): [RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '08/01/2021', 'last_production_date': '09/01/2024', 'Version Name': 'Version 3 Current', 'Date Range': '12/13/2024 12:36 PM'}), RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '05/01/2021', 'last_production_date': '08/01/2024', 'Version Name': 'Version 2', 'Date Range': '12/08/2024 07:42 AM - 12/13/2024 12:36 PM'}), RealDictRow({'srp_well_name': 'MIDNIGHT MATADOR 12-24 D #6LS', 'current_operator': 'BIRCH OPERATIONS INC', 'hole_direction': 'HORIZONTAL', 'srp_well_status': 'Producing', 'permit_date': '01/03/2020', 'spud_date': '03/20/2020', 'rig_release_date': '05/29/2020', 'completion_date': '08/21/2021', 'first_production_date': '05/01/2021', 'last_production_date': '08/01/2024', 'Version Name': 'Version 1', 'Date Range': '12/06/2024 12:10 AM - 12/08/2024 07:42 AM'})]
+[32mINFO    [0m pytestifypro.ui.pages.wells_page:wells_page.py:33 Fetched version options: ['Version 3 Current (12/13/2024 12:36 PM)', '(12/13/2024 12:36 PM)', 'Version 2 (12/08/2024 07:42 AM - 12/13/2024 12:36 PM)', '(12/08/2024 07:42 AM - 12/13/2024 12:36 PM)', 'Version 1 (12/06/2024 12:10 AM - 12/08/2024 07:42 AM)', '(12/06/2024 12:10 AM - 12/08/2024 07:42 AM)']
+[32mINFO    [0m test_well_header_steps:test_well_header_steps.py:199 Actual versions from UI: ['Version 3 Current (12/13/2024 12:36 PM)', '(12/13/2024 12:36 PM)', 'Version 2 (12/08/2024 07:42 AM - 12/13/2024 12:36 PM)', '(12/08/2024 07:42 AM - 12/13/2024 12:36 PM)', 'Version 1 (12/06/2024 12:10 AM - 12/08/2024 07:42 AM)', '(12/06/2024 12:10 AM - 12/08/2024 07:42 AM)']
